@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Comments
- * slug: bsoj/comments
+ * slug: smolblog/comments
  * inserter: no
  */
 

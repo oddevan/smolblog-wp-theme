@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Default footer
- * Slug: bsoj/footer
+ * Slug: smolblog/footer
  * Categories: footer
  * Block Types: core/template-part/footer
  */
@@ -21,10 +21,10 @@
 			<p>
 			<?php
 
-				$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'bsoj' ) ) . '" rel="nofollow">WordPress</a>';
+				$wordpress_link = '<a href="' . esc_url( __( 'https://wordpress.org', 'smolblog' ) ) . '" rel="nofollow">WordPress</a>';
 				echo sprintf(
 					/* Translators: WordPress link. */
-					esc_html__( 'Designed with %1$s', 'bsoj' ),
+					esc_html__( 'Designed with %1$s', 'smolblog' ),
 					$wordpress_link
 				);
 				?>
