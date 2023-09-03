@@ -1,15 +1,15 @@
 /*
 Theme Name: Smolblog
-Theme URI: https://wordpress.com/theme/smolblog
-Author: Automattic
-Author URI: https://automattic.com/
+Theme URI: https://github.com/smolblog/smolblog-wp-theme
+Author: Smolblog
+Author URI: https://smolblog.com/
 Description: Smolblog (Blue Screen of Joy) is a blog theme inspired by the infamous Blue Screen of Death.
 Requires at least: 6.1
 Tested up to: 6.3
-Requires PHP: 5.7
+Requires PHP: 8.1
 Version: 1.0.2
-License: GNU General Public License v2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License: GNU Affero General Public License v3 or later
+License URI: http://www.gnu.org/licenses/agpl-3.0.html
 Template:
 Text Domain: smolblog
 Tags: blog, one-column, wide-blocks, block-patterns, featured-images, full-site-editing, rtl-language-support, threaded-comments, translation-ready

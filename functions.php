@@ -58,3 +58,71 @@ if ( ! function_exists( 'smolblog_styles' ) ) :
 endif;
 
 add_action( 'wp_enqueue_scripts', 'smolblog_styles' );
+
+if ( ! function_exists( 'smolblog_post_types' ) ) :
+
+	/**
+	 * Register Smolblog post types
+	 *
+	 * @since Smolblog 1.0
+	 *
+	 * @return void
+	 */
+	function smolblog_post_types() {
+
+		$default_cpt_args = [
+			'supports'              => array( 'editor', 'thumbnail', 'comments', 'custom-fields', 'page-attributes', 'post-formats' ),
+			'taxonomies'            => array( 'post_tag' ),
+			'public'                => true,
+			'menu_position'         => 5,
+			'has_archive'           => true,
+		];
+		
+		register_post_type( 'sb-note', [
+			'label'                 => __( 'Note', 'smolblog' ),
+			'description'           => __( 'A short text post', 'smolblog' ),
+			...$default_cpt_args,
+		] );
+		
+		register_post_type( 'sb-reblog', [
+			'label'                 => __( 'Reblog', 'smolblog' ),
+			'description'           => __( 'A webpage from off-site', 'smolblog' ),
+			...$default_cpt_args,
+		] );
+		register_post_type( 'sb-picture', [
+			'label'                 => __( 'Picture', 'smolblog' ),
+			'description'           => __( 'A visual medium', 'smolblog' ),
+			...$default_cpt_args,
+		] );
+		
+		add_action( 'pre_get_posts', function($query) {
+			if ( ! is_admin() && $query->is_main_query() ) {
+				$query->set( 'post_type', array( 'post', 'page', 'status', 'reblog' ) );
+			}
+		});
+		
+		add_filter( 'the_title_rss', function($title) {
+			global $wp_query;
+			$type = $wp_query->post->post_type;
+			if (in_array($type, [ 'note', 'reblog' ])) {
+				return null;
+			}
+			return $title;
+		});
+		
+		add_rewrite_rule(
+			'^\.well-known\/webfinger',
+			'index.php?rest_route=/smolblog/v2/webfinger',
+			'top'
+		);
+		
+		add_action( 'wp_head', function() {
+			$siteId = get_current_site_uuid();
+			echo '<link rel="micropub" href="' . get_rest_url( null, "/smolblog/v2/site/$siteId/micropub" ) . '">';
+		});		
+
+	}
+
+endif;
+
+add_action( 'init', 'smolblog_post_types' );
