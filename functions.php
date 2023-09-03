@@ -76,6 +76,7 @@ if ( ! function_exists( 'smolblog_post_types' ) ) :
 			'public'                => true,
 			'menu_position'         => 5,
 			'has_archive'           => true,
+			'show_in_rest'          => true,
 		];
 		
 		register_post_type( 'sb-note', [
