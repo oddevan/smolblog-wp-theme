@@ -96,16 +96,10 @@ if ( ! function_exists( 'smolblog_post_types' ) ) :
 			...$default_cpt_args,
 		] );
 		
-		add_action( 'pre_get_posts', function($query) {
-			if ( ! is_admin() && $query->is_main_query() ) {
-				$query->set( 'post_type', array( 'post', 'page', 'status', 'reblog' ) );
-			}
-		});
-		
 		add_filter( 'the_title_rss', function($title) {
 			global $wp_query;
 			$type = $wp_query->post->post_type;
-			if (in_array($type, [ 'note', 'reblog' ])) {
+			if (in_array($type, [ 'sb-note', 'sb-reblog', 'sb-picture' ])) {
 				return null;
 			}
 			return $title;
@@ -117,13 +111,78 @@ if ( ! function_exists( 'smolblog_post_types' ) ) :
 			'top'
 		);
 		
-		add_action( 'wp_head', function() {
-			$siteId = get_current_site_uuid();
-			echo '<link rel="micropub" href="' . get_rest_url( null, "/smolblog/v2/site/$siteId/micropub" ) . '">';
-		});		
+		if ( function_exists( 'switch_to_blog' ) ) {
+			add_action( 'wp_head', function() {
+				$siteId = smolblog_current_site_uuid();
+				$micropub_url = get_rest_url( BLOG_ID_CURRENT_SITE, "/smolblog/v2/site/$siteId/micropub" );
+
+				echo '<link rel="micropub" href="' . $micropub_url . '"><!-- hello -->';
+			});	
+		}	
 
 	}
 
 endif;
 
 add_action( 'init', 'smolblog_post_types' );
+
+if ( ! function_exists( 'smolblog_post_queries' ) ) :
+
+	/**
+	 * Add Smolblog post types to the front page and main archive queries.
+	 * 
+	 * @see https://www.rafaelcardero.com/tutorials/how-to-add-custom-post-types-to-the-main-query-in-wordpress/
+	 * @since Smolblog 1.0
+	 * 
+	 * @param WP_Query $query Current page query.
+	 *
+	 * @return void
+	 */
+	function smolblog_post_queries( $query ) {
+
+		if ( is_admin() || !$query->is_main_query() ) {
+			return;
+		}
+
+		if (
+			$query->is_home ||
+			$query->is_date || 
+			$query->is_author || 
+			$query->is_category || 
+			$query->is_tag || 
+			$query->is_tax
+		) {
+			$query->set(
+				'post_type',
+				[
+					'post',
+					'sb-note',
+					'sb-reblog',
+					'sb-picture',
+				]
+			);
+    }
+
+	}
+
+endif;
+
+add_action( 'pre_get_posts', 'smolblog_post_queries', 10, 1 );
+
+if ( ! function_exists( 'smolblog_current_site_uuid' ) ) :
+
+	/**
+	 * Get the UUID for this site.
+	 *
+	 * @return string
+	 */
+	function smolblog_current_site_uuid() {
+		if ( ! function_exists( 'get_site_meta' ) ) {
+			return '9c41b97e-9ac7-4288-80eb-9551b01d0845';
+		}
+
+		$dbid = get_current_blog_id();
+		return get_site_meta( $dbid, 'smolblog_site_id', true );
+	}
+
+endif;
